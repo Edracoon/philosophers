@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/14 15:31:13 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:56:22 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	init_struct(t_data *d)
 		d->philo[i].is_eating = 0;
 		d->philo[i].died = 0;
 		pthread_mutex_init(&d->forks[i], NULL);
+		d->philo[i].data = d;
 		i++;
 	}
 	i = 0;
@@ -71,7 +72,7 @@ int	main(int ac, char **av)
 	if (d.nbphilo < 2 || d.nbphilo > 1024)
 		return (printf("Error\nNumber of philosophers invalid\n"));
 	gettimeofday(&time, NULL);
-	d.timeofday = time.tv_sec;
+	d.timeofday = time.tv_usec;
 	d.ttd = ft_atoi(av[2]);
 	d.tte = ft_atoi(av[3]);
 	d.tts = ft_atoi(av[4]);

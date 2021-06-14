@@ -6,35 +6,70 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/14 16:08:54 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/14 19:18:09 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosopher.h"
 
-void	*launch_philo(void	*data)
+unsigned long long have_day_time()
 {
-	t_data	*d;
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return (time.tv_usec);
+}
+
+void	*launch_philo(void	*phil)
+{
+	t_philo	*philo;
+	unsigned long long	time;
 	
-	d = (t_data *)data;
-	if (d->philo[d->n].lfork && d->philo[d->n].rfork)
+	philo = (t_philo *)phil;
+	if (philo->lfork && philo->rfork)
 	{
-		pthread_mutex_lock(d->philo[d->n].lfork);
-		pthread_mutex_lock(d->philo[d->n].rfork);
-		d->philo[d->n].is_eating = 1;
+		while(1)
+		{
+			pthread_mutex_lock(philo->lfork);
+			time = have_day_time();
+			if ((time - philo->data->timeofday) > philo->data->ttd * 1000)
+			{
+				time = have_day_time();
+				printf("%llu %i died\n", (time - philo->data->timeofday) / 1000, philo->id);
+				return ((void *)0);
+			}
+			printf("%llu %i has taken a fork\n", (time - philo->data->timeofday) / 1000, philo->id);
+			pthread_mutex_lock(philo->rfork);
+			time = have_day_time();
+			printf("%llu %i has taken a fork\n", (time - philo->data->timeofday) / 1000, philo->id);
+			//printf("time = %llu ttd = %llu\n", (time - philo->data->timeofday), philo->data->ttd * 1000);
+			time = have_day_time();
+			printf("%llu %i is eating\n", (time - philo->data->timeofday) / 1000, philo->id);
+			usleep(philo->data->tte);
+			//philo->data->timeofday = time;
+			time = have_day_time();
+			printf("%llu %i started sleeping\n", (time - philo->data->timeofday) / 1000, philo->id);
+			pthread_mutex_unlock(philo->lfork);
+			pthread_mutex_unlock(philo->rfork);
+			usleep(philo->data->tts);
+			time = have_day_time();
+			printf("%llu %i is thinking\n", (time - philo->data->timeofday) / 1000, philo->id);
+		}
 	}
-	printf("philo[%i] | is_eating[%i] | %lu\n", d->n, d->philo[d->n].is_eating, (unsigned long)d->philo[d->n].thread);
-	usleep(100000);
 	return ((void *)0);
 }
 
 void	main_init_threads(t_data *d)
 {
-	d->n = 0;
-	while (d->n < d->nbphilo)
+	int i;
+	
+	i = 0;
+	while (i < d->nbphilo)
 	{
-		pthread_create(&d->philo[d->n].thread, NULL, &launch_philo, (void *)d);
-		pthread_join(d->philo[d->n].thread, NULL);
-		d->n++;
+		pthread_create(&d->philo[i].thread, NULL, &launch_philo, (void *)&d->philo[i]);
+		i++;
 	}
+	i = -1;
+	while (++i < d->nbphilo)
+		pthread_join(d->philo[i].thread, NULL);
 }

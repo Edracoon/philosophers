@@ -20,12 +20,15 @@
 # include <limits.h>
 # include <sys/time.h>
 
+typedef struct s_data	t_data;
+
 typedef struct	s_philo
 {
 	pthread_t			thread;
 	pthread_mutex_t		*lfork;
 	pthread_mutex_t		*rfork;
 
+	t_data				*data;
 	int					id;
 	int					is_eating;
 	int					is_sleeping;
