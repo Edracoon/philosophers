@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/14 11:33:49 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/14 15:31:13 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,35 @@ int	check_args(t_data *d)
 	return (0);
 }
 
+void	init_struct(t_data *d)
+{
+	int	i;
+
+	i = 0;
+	d->forks = malloc(sizeof(pthread_mutex_t) * d->nbphilo);
+	d->philo = malloc(sizeof(t_philo) * d->nbphilo);
+	while (i < d->nbphilo)
+	{
+		d->philo[i].id = i + 1;
+		d->philo[i].is_eating = 0;
+		d->philo[i].is_eating = 0;
+		d->philo[i].is_eating = 0;
+		d->philo[i].died = 0;
+		pthread_mutex_init(&d->forks[i], NULL);
+		i++;
+	}
+	i = 0;
+	while (i < d->nbphilo)
+	{
+		if (i - 1 < 0)
+			d->philo[i].lfork = &d->forks[d->nbphilo - 1];
+		else
+			d->philo[i].lfork = &d->forks[i - 1];
+		d->philo[i].rfork = &d->forks[i];
+		i++;
+	}
+}
+
 int	main(int ac, char **av)
 {
 	t_data			d;
@@ -51,8 +80,10 @@ int	main(int ac, char **av)
 		d.ntepme = ft_atoi(av[5]);
 	if (!check_args(&d))
 		return (printf("Error\nInvalid arguments\n"));
-	printf("nb philo = %i \nttd = %llu \ntte = %llu \ntts = %llu \ntimeofday = %llu \n",
-		 d.nbphilo, d.ttd, d.tte, d.tts, d.timeofday);
+	printf("-------------------\nnb philo = %i \nttd = %llu \ntte = %llu \
+			\ntts = %llu \ntimeofday = %llu\n-------------------\n",
+		 	d.nbphilo, d.ttd, d.tte, d.tts, d.timeofday);
+	init_struct(&d);
 	main_init_threads(&d);
 	return (1);
 }

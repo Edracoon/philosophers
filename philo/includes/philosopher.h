@@ -23,18 +23,23 @@
 typedef struct	s_philo
 {
 	pthread_t			thread;
-	int					pos;
+	pthread_mutex_t		*lfork;
+	pthread_mutex_t		*rfork;
+
+	int					id;
 	int					is_eating;
 	int					is_sleeping;
 	int					is_thinking;
 	int					died;
-	unsigned long long	limit;
-	unsigned long long	last_eat;
+	unsigned long long	dielimit;
+	unsigned long long	lte;
 }	t_philo;
 
 typedef struct s_data
 {
+	pthread_mutex_t		*forks;
 	t_philo				*philo;
+
 	unsigned long long	timeofday;
 	unsigned long long	tts;
 	unsigned long long	tte;
