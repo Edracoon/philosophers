@@ -34,8 +34,7 @@ typedef struct	s_philo
 	int					is_sleeping;
 	int					is_thinking;
 	int					died;
-	unsigned long long	dielimit;
-	unsigned long long	lte;
+	unsigned long long	die_time;
 }	t_philo;
 
 typedef struct s_data
@@ -54,10 +53,8 @@ typedef struct s_data
 	int					n;
 }	t_data;
 
-void	main_init_threads(t_data *d);
-int		ft_atoi(const char *str);
-void	ft_putnbr_fd(int nb, int fd);
-void	ft_putstr_fd(char *s, int fd);
-void	ft_putchar_fd(char c, int fd);
+void				main_init_threads(t_data *d);
+int					ft_atoi(const char *str);
+unsigned long long	get_current_time();
 
 #endif

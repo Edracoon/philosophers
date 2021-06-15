@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/14 18:56:22 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/15 10:21:26 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,13 @@ void	init_struct(t_data *d)
 int	main(int ac, char **av)
 {
 	t_data			d;
-	struct timeval	time;
 
 	if (ac != 5 && ac != 6)
 		return (printf("Error\nNumber of arguments\n"));
 	d.nbphilo = ft_atoi(av[1]);
 	if (d.nbphilo < 2 || d.nbphilo > 1024)
 		return (printf("Error\nNumber of philosophers invalid\n"));
-	gettimeofday(&time, NULL);
-	d.timeofday = time.tv_usec;
+	d.timeofday = get_current_time();
 	d.ttd = ft_atoi(av[2]);
 	d.tte = ft_atoi(av[3]);
 	d.tts = ft_atoi(av[4]);
