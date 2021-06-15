@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/15 10:21:26 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/15 16:50:23 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,6 @@ void	init_struct(t_data *d)
 	while (i < d->nbphilo)
 	{
 		d->philo[i].id = i + 1;
-		d->philo[i].is_eating = 0;
-		d->philo[i].is_eating = 0;
-		d->philo[i].is_eating = 0;
 		d->philo[i].died = 0;
 		pthread_mutex_init(&d->forks[i], NULL);
 		d->philo[i].data = d;
@@ -82,6 +79,8 @@ int	main(int ac, char **av)
 	printf("-------------------\nnb philo = %i \nttd = %llu \ntte = %llu \
 			\ntts = %llu \ntimeofday = %llu\n-------------------\n",
 		 	d.nbphilo, d.ttd, d.tte, d.tts, d.timeofday);
+	pthread_mutex_init(&d.dead, NULL);
+	pthread_mutex_lock(&d.dead);
 	init_struct(&d);
 	main_init_threads(&d);
 	return (1);

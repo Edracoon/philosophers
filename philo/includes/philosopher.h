@@ -30,9 +30,6 @@ typedef struct	s_philo
 
 	t_data				*data;
 	int					id;
-	int					is_eating;
-	int					is_sleeping;
-	int					is_thinking;
 	int					died;
 	unsigned long long	die_time;
 }	t_philo;
@@ -51,6 +48,7 @@ typedef struct s_data
 	int					nbphilo;
 	int					ac;
 	int					n;
+	pthread_mutex_t		dead;
 }	t_data;
 
 void				main_init_threads(t_data *d);
