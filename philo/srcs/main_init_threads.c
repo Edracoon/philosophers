@@ -6,13 +6,13 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 11:22:30 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:07:14 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosopher.h"
 
-unsigned long long get_current_time()
+unsigned long long	get_current_time(void)
 {
 	struct timeval	time;
 
@@ -20,8 +20,11 @@ unsigned long long get_current_time()
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-void	write_message_lock(int msg, unsigned long long time, int id, t_philo *philo)
+void	write_message_lock(int msg, unsigned long long time,
+							 int id, t_philo *philo)
 {
+	(void)time;
+	(void)id;
 	pthread_mutex_lock(&philo->data->mprintf);
 	if (msg == 1)
 		printf("%llu\t%i has taken a fork\n", time, id);
@@ -33,103 +36,65 @@ void	write_message_lock(int msg, unsigned long long time, int id, t_philo *philo
 		printf("%llu\t%i is thinking\n", time, id);
 	else if (msg == 5)
 		printf("%llu\t%i died\n", time, id);
-	pthread_mutex_unlock(&philo->data->mprintf);
+	if (msg != 5)
+		pthread_mutex_unlock(&philo->data->mprintf);
 }
 
-void	*philo_died(void *phil)
+void	*philo_dead(void *phil)
 {
 	t_philo				*philo;
-	unsigned long long	time;
 
 	philo = (t_philo *)phil;
 	pthread_mutex_lock(&philo->data->died);
 	if (philo->is_dead == 1)
 	{
-		time = get_current_time();
 		pthread_mutex_unlock(philo->lfork);
 		pthread_mutex_unlock(philo->rfork);
 		pthread_mutex_unlock(&philo->data->died);
-		write_message_lock(5, (time - philo->data->timeofday), philo->id, philo);
+		write_message_lock(5, (get_current_time() - philo->data->timeofday),
+			philo->id, philo);
+		pthread_mutex_lock(&philo->data->mprintf);
 		return (NULL);
 	}
 	return (NULL);
 }
 
-void	*launch_philo(void	*phil)
+void	*launch_philo(void *phil)
 {
-	t_philo				*philo;
-	pthread_t			check_death;
-	unsigned long long	time;
-	
+	t_philo	*philo;
+
 	philo = (t_philo *)phil;
 	philo->die_time = get_current_time();
-	pthread_create(&check_death, NULL, &philo_died, philo);
-	while(1)
+	while (1)
 	{
-		pthread_mutex_lock(philo->lfork);
-		time = get_current_time();
-		if (time - philo->die_time >= philo->data->ttd)
-		{
-			philo->is_dead = 1;
-			// pthread_mutex_unlock(philo->lfork);
-			pthread_mutex_unlock(&philo->data->died);
-			// write_message_lock(5, (time - philo->data->timeofday), philo->id, philo);
-			break ;
-		}
-		write_message_lock(1, (time - philo->data->timeofday), philo->id, philo);
-		pthread_mutex_lock(philo->rfork);
-		time = get_current_time();
-		if (time - philo->die_time >= philo->data->ttd)
-		{
-			philo->is_dead = 1;
-			// pthread_mutex_unlock(philo->lfork);
-			// pthread_mutex_unlock(philo->rfork);
-			pthread_mutex_unlock(&philo->data->died);
-			// write_message_lock(5, (time - philo->data->timeofday), philo->id, philo);
-			break ;
-		}
-		write_message_lock(1, (time - philo->data->timeofday), philo->id, philo);
-		write_message_lock(2, (time - philo->data->timeofday), philo->id, philo);
-		usleep(philo->data->tte * 1000);
-		time = get_current_time();
-		philo->die_time = time;
-		write_message_lock(3, (time - philo->data->timeofday), philo->id, philo);
-		pthread_mutex_unlock(philo->lfork);
-		pthread_mutex_unlock(philo->rfork);
-		usleep(philo->data->tts * 1000);
-		time = get_current_time();
-		if (time - philo->die_time >= philo->data->ttd)
-		{
-			philo->is_dead = 1;
-			//write_message_lock(5, (time - philo->data->timeofday), philo->id, philo);
-			pthread_mutex_unlock(&philo->data->died);
-			break ;
-		}
-		write_message_lock(4, (time - philo->data->timeofday), philo->id, philo);
-		//printf("%llu\t%i is thinking\n", (time - philo->data->timeofday), philo->id);
+		left_fork(philo);
+		right_fork(philo);
+		eat(philo);
+		ft_sleep(philo);
 	}
-	//write_message_lock(5, (time - philo->data->timeofday), philo->id, philo);
-	//printf("%llu\t%i died\n", (time - philo->data->timeofday), philo->id);
 	return ((void *)0);
 }
 
 void	main_init_threads(t_data *d)
 {
-	int i;
+	int			i;
+	pthread_t	*isdead;
+	pthread_t	*philothread;
 
+	isdead = malloc(sizeof(pthread_t) * d->nbphilo);
+	philothread = malloc(sizeof(pthread_t) * d->nbphilo);
+	pthread_mutex_lock(&d->died);
 	i = 0;
 	while (i < d->nbphilo)
 	{
-		pthread_create(&d->philo[i].thread, NULL, &launch_philo, (void *)&d->philo[i]);
+		pthread_create(&philothread[i], NULL, &launch_philo, &d->philo[i]);
 		usleep(100);
-		i++;
-	}
-	i = 0;
-	while (i < d->nbphilo)
-	{
-		pthread_join(d->philo[i].thread, NULL);
+		pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
 		i++;
 	}
 	pthread_mutex_lock(&d->died);
 	pthread_mutex_unlock(&d->died);
+	free(isdead);
+	free(philothread);
+	usleep(100000);
 }

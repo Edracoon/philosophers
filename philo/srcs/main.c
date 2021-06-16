@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 10:21:01 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:11:15 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,8 @@ int	main(int ac, char **av)
 		d.ntepme = ft_atoi(av[5]);
 	if (!check_args(&d))
 		return (printf("Error\nInvalid arguments\n"));
-	printf("-------------------\nnb philo = %i \nttd = %llu \ntte = %llu \
-			\ntts = %llu \ntimeofday = %llu\n-------------------\n",
-		 	d.nbphilo, d.ttd, d.tte, d.tts, d.timeofday);
 	pthread_mutex_init(&d.mprintf, NULL);
 	pthread_mutex_init(&d.died, NULL);
-//	pthread_mutex_lock(&d.mprintf);
 	init_struct(&d);
 	main_init_threads(&d);
 	return (1);

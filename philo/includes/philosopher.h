@@ -22,12 +22,10 @@
 
 typedef struct s_data	t_data;
 
-typedef struct	s_philo
+typedef struct s_philo
 {
-	pthread_t			thread;
 	pthread_mutex_t		*lfork;
 	pthread_mutex_t		*rfork;
-
 	t_data				*data;
 	int					id;
 	int					is_dead;
@@ -53,7 +51,13 @@ typedef struct s_data
 }	t_data;
 
 void				main_init_threads(t_data *d);
+void				right_fork(t_philo *philo);
+void				left_fork(t_philo *philo);
+void				eat(t_philo *philo);
+void				ft_sleep(t_philo *philo);
+unsigned long long	get_current_time(void);
+void				write_message_lock(int msg, unsigned long long time,
+						int id, t_philo *philo);
 int					ft_atoi(const char *str);
-unsigned long long	get_current_time();
 
 #endif

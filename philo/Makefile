@@ -4,6 +4,7 @@ CFLAGS =	-Wall -Wextra -Werror #-g -fsanitize=address
 
 SRCS =		srcs/main.c \
 			srcs/main_init_threads.c \
+			srcs/eat_sleep_think.c \
 			srcs/ft_atoi.c \
 
 OBJS =		$(SRCS:.c=.o)
