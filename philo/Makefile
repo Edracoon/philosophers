@@ -1,6 +1,6 @@
 NAME =		philo
 
-CFLAGS =	-Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS =	-Wall -Wextra -Werror #-g -fsanitize=address
 
 SRCS =		srcs/main.c \
 			srcs/main_init_threads.c \
