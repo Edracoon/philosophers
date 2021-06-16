@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 18:16:04 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 18:21:17 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ void	init_struct(t_data *d)
 
 int	verif_args_atoi(int ac, char **av, t_data *d)
 {
+	if (!ft_isdigit(av[1]))
+		return (0);
 	d->nbphilo = ft_atoi(av[1]);
 	if (d->nbphilo < 2 || d->nbphilo > 200)
 		return (0);
@@ -84,7 +86,7 @@ int	main(int ac, char **av)
 	if (ac != 5 && ac != 6)
 		return (printf("Error\nNumber of arguments\n"));
 	if (!verif_args_atoi(ac, av, &d))
-		return (printf("Error\nArguments invalid (only numbers)\n"));
+		return (printf("Error\nArguments invalid\n"));
 	if (!check_args(&d))
 		return (printf("Error\nInvalid arguments\n"));
 	pthread_mutex_init(&d.mprintf, NULL);
