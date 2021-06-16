@@ -5,7 +5,7 @@ CFLAGS =	-Wall -Wextra -Werror
 SRCS =		srcs/main.c \
 			srcs/main_init_threads.c \
 			srcs/eat_sleep_think.c \
-			srcs/ft_atoi.c \
+			srcs/utils.c \
 
 OBJS =		$(SRCS:.c=.o)
 

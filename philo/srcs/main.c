@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 17:11:15 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 18:16:04 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,27 +58,40 @@ void	init_struct(t_data *d)
 	}
 }
 
+int	verif_args_atoi(int ac, char **av, t_data *d)
+{
+	d->nbphilo = ft_atoi(av[1]);
+	if (d->nbphilo < 2 || d->nbphilo > 200)
+		return (0);
+	d->timeofday = get_current_time();
+	if (!ft_isdigit(av[2]) || !ft_isdigit(av[3]) || !ft_isdigit(av[4]))
+		return (0);
+	d->ttd = ft_atoi(av[2]);
+	d->tte = ft_atoi(av[3]);
+	d->tts = ft_atoi(av[4]);
+	d->ac = ac;
+	if (ac == 6 && !ft_isdigit(av[5]))
+		return (0);
+	if (ac == 6)
+		d->ntepme = ft_atoi(av[5]);
+	return (1);
+}
+
 int	main(int ac, char **av)
 {
 	t_data			d;
 
 	if (ac != 5 && ac != 6)
 		return (printf("Error\nNumber of arguments\n"));
-	d.nbphilo = ft_atoi(av[1]);
-	if (d.nbphilo < 2 || d.nbphilo > 1024)
-		return (printf("Error\nNumber of philosophers invalid\n"));
-	d.timeofday = get_current_time();
-	d.ttd = ft_atoi(av[2]);
-	d.tte = ft_atoi(av[3]);
-	d.tts = ft_atoi(av[4]);
-	d.ac = ac;
-	if (ac == 6)
-		d.ntepme = ft_atoi(av[5]);
+	if (!verif_args_atoi(ac, av, &d))
+		return (printf("Error\nArguments invalid (only numbers)\n"));
 	if (!check_args(&d))
 		return (printf("Error\nInvalid arguments\n"));
 	pthread_mutex_init(&d.mprintf, NULL);
 	pthread_mutex_init(&d.died, NULL);
 	init_struct(&d);
 	main_init_threads(&d);
+	if (ac == 6)
+		printf("Each philosophers ate %i times\n", d.ntepme);
 	return (1);
 }

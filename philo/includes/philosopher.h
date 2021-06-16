@@ -59,5 +59,6 @@ unsigned long long	get_current_time(void);
 void				write_message_lock(int msg, unsigned long long time,
 						int id, t_philo *philo);
 int					ft_atoi(const char *str);
+int					ft_isdigit(char *c);
 
 #endif

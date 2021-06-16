@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 17:44:42 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 18:07:13 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ void	*philo_dead(void *phil)
 	t_philo				*philo;
 
 	philo = (t_philo *)phil;
-	pthread_mutex_lock(&philo->data->died);
 	if (philo->is_dead == 1)
 	{
 		pthread_mutex_unlock(philo->lfork);
