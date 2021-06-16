@@ -30,6 +30,7 @@ typedef struct s_philo
 	int					id;
 	int					is_dead;
 	unsigned long long	die_time;
+	int					eating;
 }	t_philo;
 
 typedef struct s_data
@@ -46,13 +47,14 @@ typedef struct s_data
 	int					nbphilo;
 	int					ac;
 	int					n;
+	int					miam;
+
 	pthread_mutex_t		died;
 	pthread_mutex_t		mprintf;
 }	t_data;
 
 void				main_init_threads(t_data *d);
-void				right_fork(t_philo *philo);
-void				left_fork(t_philo *philo);
+void				ft_fork(t_philo *philo);
 void				eat(t_philo *philo);
 void				ft_sleep(t_philo *philo);
 unsigned long long	get_current_time(void);

@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 18:27:48 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 20:12:58 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void	write_message_lock(int msg, unsigned long long time,
 		printf("%llu\t%i is thinking\n", time, id);
 	else if (msg == 5)
 		printf("%llu\t%i died\n", time, id);
-	if (msg != 5)
+	else if (msg == 6)
+		printf("Each philosophers ate %i times\n", philo->data->ntepme);\
+	if ((msg != 5 && msg != 6))
 		pthread_mutex_unlock(&philo->data->mprintf);
 }
 
@@ -47,14 +49,20 @@ void	*philo_dead(void *phil)
 	philo = (t_philo *)phil;
 	while (1)
 	{
-		if (philo->is_dead == 1)
+		if ((philo->eating == 0 && get_current_time() - philo->die_time >= philo->data->ttd) || philo->data->miam == 1)
 		{
-			pthread_mutex_unlock(philo->lfork);
-			pthread_mutex_unlock(philo->rfork);
-			pthread_mutex_unlock(&philo->data->died);
+			if (philo->data->miam == 1)
+			{
+				pthread_mutex_unlock(&philo->data->died);
+				write_message_lock(6, (get_current_time() - philo->data->timeofday),
+					philo->id, philo);
+				//pthread_mutex_lock(&philo->data->mprintf);
+				break ;
+			}
 			write_message_lock(5, (get_current_time() - philo->data->timeofday),
 				philo->id, philo);
-			pthread_mutex_lock(&philo->data->mprintf);
+			pthread_mutex_unlock(&philo->data->died);
+			//pthread_mutex_lock(&philo->data->mprintf);
 			return (NULL);
 		}
 	}
@@ -64,20 +72,20 @@ void	*philo_dead(void *phil)
 void	*launch_philo(void *phil)
 {
 	t_philo	*philo;
-	int		i;
+	int	i;
 
 	i = 0;
 	philo = (t_philo *)phil;
+	philo->data->miam = 0;
 	philo->die_time = get_current_time();
 	while (1)
 	{
 		if (philo->data->ac == 6 && i >= philo->data->ntepme)
 		{
-			pthread_mutex_unlock(&philo->data->died);
+			philo->data->miam = 1;
 			break ;
 		}
-		left_fork(philo);
-		right_fork(philo);
+		ft_fork(philo);
 		eat(philo);
 		ft_sleep(philo);
 		i++;
@@ -97,14 +105,27 @@ void	main_init_threads(t_data *d)
 	i = 0;
 	while (i < d->nbphilo)
 	{
-		pthread_create(&philothread[i], NULL, &launch_philo, &d->philo[i]);
-		usleep(100);
-		pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
+		if (i % 2 == 0)
+		{
+			pthread_create(&philothread[i], NULL, &launch_philo, &d->philo[i]);
+			usleep(50);
+			pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
+		}
+		i++;
+	}
+	i = 0;
+	while (i < d->nbphilo)
+	{
+		if ((i % 2 != 0))
+		{
+			pthread_create(&philothread[i], NULL, &launch_philo, &d->philo[i]);
+			usleep(50);
+			pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
+		}
 		i++;
 	}
 	pthread_mutex_lock(&d->died);
 	pthread_mutex_unlock(&d->died);
 	free(isdead);
 	free(philothread);
-	usleep(100000);
 }
