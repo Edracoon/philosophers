@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 17:07:14 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:44:42 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,23 @@ void	*philo_dead(void *phil)
 void	*launch_philo(void *phil)
 {
 	t_philo	*philo;
+	int		i;
 
+	i = 0;
 	philo = (t_philo *)phil;
 	philo->die_time = get_current_time();
 	while (1)
 	{
+		if (philo->data->ac == 6 && i >= philo->data->ntepme)
+		{
+			pthread_mutex_unlock(&philo->data->died);
+			break ;
+		}
 		left_fork(philo);
 		right_fork(philo);
 		eat(philo);
 		ft_sleep(philo);
+		i++;
 	}
 	return ((void *)0);
 }

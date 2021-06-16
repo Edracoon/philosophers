@@ -42,7 +42,7 @@ typedef struct s_data
 	unsigned long long	tte;
 	unsigned long long	ttd;
 	unsigned long long	nme;
-	unsigned long long	ntepme;
+	int					ntepme;
 	int					nbphilo;
 	int					ac;
 	int					n;

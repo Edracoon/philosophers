@@ -1,6 +1,6 @@
 NAME =		philo
 
-CFLAGS =	-Wall -Wextra -Werror #-g -fsanitize=address
+CFLAGS =	-Wall -Wextra -Werror
 
 SRCS =		srcs/main.c \
 			srcs/main_init_threads.c \
@@ -22,4 +22,4 @@ fclean:		clean
 
 re: 		fclean all
 
-.PHONY:		re clean fclean all libft
+.PHONY:		re clean fclean all
