@@ -54,6 +54,7 @@ typedef struct s_data
 }	t_data;
 
 void				main_init_threads(t_data *d);
+void				*philo_dead(void *phil);
 void				ft_fork(t_philo *philo);
 void				eat(t_philo *philo);
 void				ft_sleep(t_philo *philo);

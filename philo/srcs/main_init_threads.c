@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:00:35 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 20:12:58 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/17 11:30:27 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ unsigned long long	get_current_time(void)
 void	write_message_lock(int msg, unsigned long long time,
 							 int id, t_philo *philo)
 {
-	(void)time;
-	(void)id;
 	pthread_mutex_lock(&philo->data->mprintf);
 	if (msg == 1)
 		printf("%llu\t%i has taken a fork\n", time, id);
@@ -37,42 +35,15 @@ void	write_message_lock(int msg, unsigned long long time,
 	else if (msg == 5)
 		printf("%llu\t%i died\n", time, id);
 	else if (msg == 6)
-		printf("Each philosophers ate %i times\n", philo->data->ntepme);\
+		printf("Each philosophers ate %i times\n", philo->data->ntepme);
 	if ((msg != 5 && msg != 6))
 		pthread_mutex_unlock(&philo->data->mprintf);
-}
-
-void	*philo_dead(void *phil)
-{
-	t_philo				*philo;
-
-	philo = (t_philo *)phil;
-	while (1)
-	{
-		if ((philo->eating == 0 && get_current_time() - philo->die_time >= philo->data->ttd) || philo->data->miam == 1)
-		{
-			if (philo->data->miam == 1)
-			{
-				pthread_mutex_unlock(&philo->data->died);
-				write_message_lock(6, (get_current_time() - philo->data->timeofday),
-					philo->id, philo);
-				//pthread_mutex_lock(&philo->data->mprintf);
-				break ;
-			}
-			write_message_lock(5, (get_current_time() - philo->data->timeofday),
-				philo->id, philo);
-			pthread_mutex_unlock(&philo->data->died);
-			//pthread_mutex_lock(&philo->data->mprintf);
-			return (NULL);
-		}
-	}
-	return (NULL);
 }
 
 void	*launch_philo(void *phil)
 {
 	t_philo	*philo;
-	int	i;
+	int		i;
 
 	i = 0;
 	philo = (t_philo *)phil;
@@ -80,30 +51,25 @@ void	*launch_philo(void *phil)
 	philo->die_time = get_current_time();
 	while (1)
 	{
-		if (philo->data->ac == 6 && i >= philo->data->ntepme)
+		ft_fork(philo);
+		eat(philo);
+		i++;
+		if (philo->data->ac == 6 && i == philo->data->ntepme)
 		{
 			philo->data->miam = 1;
 			break ;
 		}
-		ft_fork(philo);
-		eat(philo);
 		ft_sleep(philo);
-		i++;
 	}
 	return ((void *)0);
 }
 
-void	main_init_threads(t_data *d)
+void	create_all_threads(pthread_t *isdead, pthread_t *philothread, t_data *d)
 {
-	int			i;
-	pthread_t	*isdead;
-	pthread_t	*philothread;
+	int	i;
 
-	isdead = malloc(sizeof(pthread_t) * d->nbphilo);
-	philothread = malloc(sizeof(pthread_t) * d->nbphilo);
-	pthread_mutex_lock(&d->died);
-	i = 0;
-	while (i < d->nbphilo)
+	i = -1;
+	while (++i < d->nbphilo)
 	{
 		if (i % 2 == 0)
 		{
@@ -111,10 +77,10 @@ void	main_init_threads(t_data *d)
 			usleep(50);
 			pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
 		}
-		i++;
 	}
-	i = 0;
-	while (i < d->nbphilo)
+	usleep(100);
+	i = -1;
+	while (++i < d->nbphilo)
 	{
 		if ((i % 2 != 0))
 		{
@@ -122,10 +88,21 @@ void	main_init_threads(t_data *d)
 			usleep(50);
 			pthread_create(&isdead[i], NULL, &philo_dead, &d->philo[i]);
 		}
-		i++;
 	}
+}
+
+void	main_init_threads(t_data *d)
+{
+	pthread_t	*isdead;
+	pthread_t	*philothread;
+
+	isdead = malloc(sizeof(pthread_t) * d->nbphilo);
+	philothread = malloc(sizeof(pthread_t) * d->nbphilo);
+	pthread_mutex_lock(&d->died);
+	create_all_threads(isdead, philothread, d);
 	pthread_mutex_lock(&d->died);
 	pthread_mutex_unlock(&d->died);
+	usleep(100);
 	free(isdead);
 	free(philothread);
 }

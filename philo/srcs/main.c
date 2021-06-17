@@ -6,7 +6,7 @@
 /*   By: epfennig <epfennig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 15:11:15 by epfennig          #+#    #+#             */
-/*   Updated: 2021/06/16 20:07:39 by epfennig         ###   ########.fr       */
+/*   Updated: 2021/06/17 10:21:06 by epfennig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	verif_args_atoi(int ac, char **av, t_data *d)
 	if (!ft_isdigit(av[1]))
 		return (0);
 	d->nbphilo = ft_atoi(av[1]);
-	if (d->nbphilo < 1 || d->nbphilo > 512)
+	if (d->nbphilo < 1 || d->nbphilo > 200)
 		return (0);
 	d->timeofday = get_current_time();
 	if (!ft_isdigit(av[2]) || !ft_isdigit(av[3]) || !ft_isdigit(av[4]))
